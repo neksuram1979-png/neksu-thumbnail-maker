@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#111827">
+<title>Neksu Thumbnail Maker</title>
+<style>
+:root{--bg:#0b1020;--card:#151d32;--accent:#8b5cf6;--text:#f8fafc}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(145deg,#081526,#17103a);color:var(--text);font-family:system-ui,-apple-system,"Noto Sans Devanagari",sans-serif}
+header{padding:22px 16px 14px;text-align:center}header .logo{font-size:28px;font-weight:900;letter-spacing:-1px}header .logo span{color:#fbbf24}header p{margin:5px 0 0;color:#cbd5e1;font-size:14px}
+main{max-width:900px;margin:auto;padding:0 14px 30px;display:grid;gap:14px}
+.panel{background:#111a2dcc;border:1px solid #34415f;border-radius:18px;padding:15px;box-shadow:0 12px 30px #0003}
+h2{font-size:17px;margin:0 0 12px}label{display:block;font-size:13px;color:#cbd5e1;margin:12px 0 6px}
+input,select,button{font:inherit}input[type="text"],select,input[type="file"]{width:100%;padding:11px;border-radius:10px;background:#0a1225;color:#fff;border:1px solid #394765}
+input[type="color"]{width:46px;height:40px;border:0;background:transparent;padding:0}input[type="range"]{width:100%}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:10px}.control{min-width:0}
+button{border:0;border-radius:11px;padding:12px 14px;font-weight:800;cursor:pointer;color:white;background:linear-gradient(100deg,#7c3aed,#2563eb)}
+button.secondary{background:#25314d;border:1px solid #475569}button:active{transform:scale(.99)}
+.canvas-wrap{background:#070b14;padding:8px;border-radius:14px;display:flex;justify-content:center}
+canvas{width:100%;max-width:720px;height:auto;aspect-ratio:16/9;border-radius:8px;background:linear-gradient(135deg,#f97316,#ec4899,#2563eb)}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}
+.hint{font-size:12px;color:#aab7d0;line-height:1.5}.templates{display:flex;gap:8px;flex-wrap:wrap}.templates button{flex:1;min-width:100px}
+footer{text-align:center;color:#9ca3af;font-size:12px;padding:0 14px 24px}
+@media(min-width:760px){main{grid-template-columns:1fr 1.1fr;align-items:start}.preview{grid-column:2;grid-row:1 / span 2}.editor{grid-column:1}.upload{grid-column:1}}
+</style>
+</head>
+<body>
+<header><div class="logo">👑 Neksu <span>Thumbnail Maker</span></div><p>YouTube के लिए अपना शानदार थंबनेल बनाओ</p></header>
+<main>
+<section class="panel upload">
+<h2>🖼️ 1. अपनी फोटो चुनें</h2>
+<input id="photo" type="file" accept="image/*">
+<div class="hint">अपनी फोटो चुनें या बिना फोटो के रंगीन बैकग्राउंड से शुरू करें।</div>
+<label>बैकग्राउंड स्टाइल</label>
+<select id="bg">
+<option value="neon">Neon रंग</option><option value="sunset">Sunset</option><option value="blue">Blue Gaming</option><option value="green">Green Energy</option><option value="dark">Dark</option>
+</select>
+<div class="templates" style="margin-top:10px">
+<button class="secondary" data-template="gaming">🎮 Gaming</button>
+<button class="secondary" data-template="tech">💻 Tech</button>
+<button class="secondary" data-template="vlog">📹 Vlog</button>
+</div>
+</section>
+<section class="panel editor">
+<h2>✍️ 2. टेक्स्ट और स्टाइल</h2>
+<label>मुख्य टेक्स्ट</label><input id="title" type="text" value="वीडियो बनाना सीखें" maxlength="90">
+<label>छोटा टेक्स्ट (वैकल्पिक)</label><input id="subtitle" type="text" value="आसान तरीका!" maxlength="90">
+<div class="controls">
+<div class="control"><label>टेक्स्ट का रंग</label><input id="textColor" type="color" value="#ffffff"></div>
+<div class="control"><label>टेक्स्ट बैकग्राउंड</label><input id="boxColor" type="color" value="#e11d48"></div>
+<div class="control"><label>टेक्स्ट आकार</label><input id="size" type="range" min="24" max="76" value="48"></div>
+<div class="control"><label>टेक्स्ट की जगह</label><select id="position"><option value="left">बाईं ओर</option><option value="center">बीच में</option><option value="right">दाईं ओर</option></select></div>
+</div>
+<label><input id="showBox" type="checkbox" checked style="width:auto"> टेक्स्ट के पीछे रंगीन पट्टी दिखाएँ</label>
+<button id="reset" class="secondary" style="width:100%;margin-top:8px">↻ टेक्स्ट रीसेट करें</button>
+</section>
+<section class="panel preview">
+<h2>✨ 3. थंबनेल प्रीव्यू</h2>
+<div class="canvas-wrap"><canvas id="canvas" width="1280" height="720"></canvas></div>
+<div class="actions"><button id="download">⬇️ JPG डाउनलोड करें</button><button id="downloadPng" class="secondary">PNG डाउनलोड करें</button></div>
+<p class="hint">यह 1280 × 720 (16:9) YouTube थंबनेल बनाता है। डाउनलोड की गई तस्वीर मोबाइल की फाइल्स/डाउनलोड में मिलेगी।</p>
+</section>
+</main>
+<footer>Neksu Thumbnail Maker · यह ब्राउज़र में चलने वाला शुरुआती संस्करण है। आपकी फोटो आपके डिवाइस पर ही प्रोसेस होती है।</footer>
+<script>
+const $=id=>document.getElementById(id), canvas=$('canvas'),ctx=canvas.getContext('2d');
+let photo=null;
+const gradients={
+ neon:['#ff7a18','#af002d','#319197'],sunset:['#ff512f','#dd2476','#6a11cb'],
+ blue:['#00c6ff','#0072ff','#120078'],green:['#a8ff78','#00b09b','#004d40'],dark:['#283048','#12121f','#000000']
+};
+function roundRect(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath()}
+function wrapText(text,maxWidth,font){ctx.font=font;let words=text.trim().split(/\s+/),lines=[],line='';for(let word of words){let test=line?line+' '+word:word;if(ctx.measureText(test).width>maxWidth&&line){lines.push(line);line=word}else line=test}if(line)lines.push(line);return lines.slice(0,3)}
+function draw(){
+ const W=canvas.width,H=canvas.height;ctx.clearRect(0,0,W,H);
+ let g=gradients[$('bg').value]||gradients.neon,gr=ctx.createLinearGradient(0,0,W,H);gr.addColorStop(0,g[0]);gr.addColorStop(.55,g[1]);gr.addColorStop(1,g[2]);ctx.fillStyle=gr;ctx.fillRect(0,0,W,H);
+ // decorative light streaks
+ ctx.save();ctx.globalAlpha=.16;for(let i=0;i<8;i++){ctx.fillStyle=i%2?'#fff':'#000';ctx.beginPath();ctx.moveTo(i*190-120,0);ctx.lineTo(i*190+40,0);ctx.lineTo(i*190-180,H);ctx.lineTo(i*190-340,H);ctx.fill()}ctx.restore();
+ if(photo){let iw=photo.width,ih=photo.height,scale=Math.max(W*.42/iw,H*.9/ih),dw=iw*scale,dh=ih*scale,x=W-dw+35,y=(H-dh)/2;ctx.save();ctx.globalAlpha=.98;ctx.drawImage(photo,x,y,dw,dh);ctx.restore();ctx.fillStyle='rgba(5,8,22,.22)';ctx.fillRect(W*.52,0,W*.48,H)}
+ // small top label
+ ctx.fillStyle='#facc15';ctx.font='bold 30px system-ui';ctx.fillText('NEKSU • CREATOR',42,55);
+ let title=$('title').value||'अपना टेक्स्ट लिखें',sub=$('subtitle').value;
+ let size=Number($('size').value),font=`900 ${size}px system-ui, "Noto Sans Devanagari", sans-serif`;
+ let align=$('position').value, maxW=photo?W*.58:W*.86;
+ let lines=wrapText(title,maxW,font);ctx.font=font;let widths=lines.map(l=>ctx.measureText(l).width),lineH=size*1.2,totalH=lines.length*lineH;
+ let x=align==='left'?50:align==='right'?W-50-Math.max(...widths):(W-Math.max(...widths))/2;
+ if(align==='right'&&photo)x=Math.min(W*.52,W-Math.max(...widths)-45);
+ let y=(H-totalH)/2+size*.75;
+ if($('showBox').checked){ctx.fillStyle=$('boxColor').value;let bx=Math.max(25,x-20),bw=Math.min(W-bx-25,Math.max(...widths)+40),by=y-size*.92,bh=totalH+size*.38;roundRect(ctx,bx,by,bw,bh,18);ctx.fill()}
+ ctx.textAlign='left';ctx.textBaseline='alphabetic';ctx.lineJoin='round';
+ lines.forEach((line,i)=>{ctx.font=font;ctx.lineWidth=8;ctx.strokeStyle='rgba(0,0,0,.55)';ctx.strokeText(line,x,y+i*lineH);ctx.fillStyle=$('textColor').value;ctx.fillText(line,x,y+i*lineH)});
+ if(sub){ctx.font='bold 34px system-ui, "Noto Sans Devanagari", sans-serif';let sw=ctx.measureText(sub).width,sx=align==='left'?50:align==='right'?W-sw-50:(W-sw)/2,sy=Math.min(H-55,y+totalH+45);ctx.fillStyle='#fff';ctx.shadowColor='#000';ctx.shadowBlur=10;ctx.fillText(sub,sx,sy);ctx.shadowBlur=0}
+ // border
+ ctx.strokeStyle='rgba(255,255,255,.7)';ctx.lineWidth=8;ctx.strokeRect(4,4,W-8,H-8);
+}
+$('photo').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const url=URL.createObjectURL(f);const im=new Image();im.onload=()=>{photo=im;draw();URL.revokeObjectURL(url)};im.src=url});
+['title','subtitle','textColor','boxColor','size','position','showBox','bg'].forEach(id=>$(id).addEventListener('input',draw));
+document.querySelectorAll('[data-template]').forEach(b=>b.addEventListener('click',()=>{let t=b.dataset.template;if(t==='gaming'){$('title').value='GAMING VIDEO';$('subtitle').value='PRO TIPS 🔥';$('bg').value='blue';$('boxColor').value='#e11d48'}if(t==='tech'){$('title').value='टेक की पूरी जानकारी';$('subtitle').value='आसान हिंदी में';$('bg').value='neon';$('boxColor').value='#2563eb'}if(t==='vlog'){$('title').value='MY NEW VLOG';$('subtitle').value='आज का खास वीडियो';$('bg').value='sunset';$('boxColor').value='#7c3aed'}draw()}));
+$('reset').onclick=()=>{$('title').value='वीडियो बनाना सीखें';$('subtitle').value='आसान तरीका!';$('textColor').value='#ffffff';$('boxColor').value='#e11d48';$('size').value=48;$('position').value='left';$('showBox').checked=true;draw()};
+function save(type){const a=document.createElement('a');a.download='Neksu-Thumbnail.'+(type==='image/jpeg'?'jpg':'png');a.href=canvas.toDataURL(type,.94);a.click()}
+$('download').onclick=()=>save('image/jpeg');$('downloadPng').onclick=()=>save('image/png');draw();
+</script>
+</body>
+</html>
